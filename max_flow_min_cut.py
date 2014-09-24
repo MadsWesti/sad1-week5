@@ -10,10 +10,7 @@ def parse_data():
     arcs = {}
     for d in data[N+2:]:
         d = d.split()
-        a = int(d[0])
-        b = int(d[1])
-        c = int(d[2])
-        arcs[a,b] = c
+        arcs[int(d[0]), int(d[1])] = int(d[2])
 
     return N, M, nodes, arcs
 
