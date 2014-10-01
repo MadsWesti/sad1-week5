@@ -137,6 +137,6 @@ for node in g.A:
     for edge in g.adjacency_list[node]:
         if edge.u in g.A and edge.v not in g.A:
             print edge
-            mcc += edge.capacity
+            min_cut_capacity += edge.capacity
 
 print "\nMin cut is: " + str(min_cut_capacity)
