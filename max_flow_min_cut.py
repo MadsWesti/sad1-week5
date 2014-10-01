@@ -6,6 +6,7 @@ class Node:
     def __init__(self, id, name):
         self.id = id
         self.name = name 
+        self.visited = False
 
 
 class Edge:
@@ -17,7 +18,7 @@ class Edge:
         self.residual_capacity = self.capacity - self.flow
 
         if not reverse:
-            self.reverse = Edge(v, u, 0, self)
+            self.reverse = Edge(v, u, capacity, self)
         else:
             self.reverse = reverse
 
@@ -37,13 +38,16 @@ class Graph:
         self.adjacency_list = {}
 
 
-    def add_edge(self, u_id,  v_id, capacity):
+    def add_edge(self, u_id,  v_id, capacity, s_or_t=0):
         u = self.nodes[u_id]
         v = self.nodes[v_id]
+        if capacity == -1:
+            capacity = float("inf")
         e = Edge(u, v, capacity)
 
         self.adjacency_list[u].append(e)
-        self.adjacency_list[v].append(e.reverse)
+        if not s_or_t:
+            self.adjacency_list[v].append(e.reverse)
 
 
     def add_node(self, u):
@@ -57,6 +61,7 @@ class Graph:
             if not P:
                 break
             self.augment(f, P)
+            print P
 
         for edge in self.adjacency_list[self.nodes[0]]:
             f += edge.flow
@@ -75,11 +80,20 @@ class Graph:
 
 
     def find_path(self, source, sink, path):
+
+
         if source == sink:
+            print path
+            # Resetting the visited booleans
+            for node in self.nodes:
+                node.visited = False
             return path
 
         for edge in self.adjacency_list[source]:
-            if edge.residual_capacity > 0 and edge not in path:
+            node = edge.v
+            print edge
+            if edge.residual_capacity > 0 and edge not in path and not node.visited:
+                node.visited = True
                 result = self.find_path(edge.v, sink, path + [edge]) 
                 if result != None:
                     return result
@@ -102,7 +116,12 @@ def parse_data():
         u_id = int(e[0])
         v_id = int(e[1])
         capacity = int(e[2])
-        g.add_edge(u_id, v_id, capacity)
+        # If source or sink, send a true parameter to add_edge method
+        # so as to not create the reverse edge
+        if u_id == 0 or u_id == N-1 or v_id == 0 or v_id == N-1:
+            g.add_edge(u_id, v_id, capacity, 1)
+        else:
+            g.add_edge(u_id, v_id, capacity)
 
     return g
 
