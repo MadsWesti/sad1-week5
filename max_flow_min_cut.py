@@ -2,15 +2,16 @@ import sys, math
 from Queue import *
 from operator import attrgetter
 
+
 class Node:
     def __init__(self, id, name):
         self.id = id
-        self.name = name 
+        self.name = name
         self.visited = False
 
 
 class Edge:
-    def __init__(self, u, v, capacity, reverse = None):
+    def __init__(self, u, v, capacity, reverse=None):
         self.u = u
         self.v = v
         self.capacity = capacity
@@ -26,10 +27,12 @@ class Edge:
         self.flow += flow
         self.reverse.flow -= flow
         self.residual_capacity = self.capacity - self.flow
-        self.reverse.residual_capacity = self.reverse.capacity - self.reverse.flow
+        self.reverse.residual_capacity = self.reverse.capacity \
+            - self.reverse.flow
 
     def __repr__(self):
-        return str(self.u.id) + "-->" + str(self.v.id) + " - " + str(self.flow) + "/" + str(self.capacity)
+        return str(self.u.id) + "-->" + str(self.v.id) + " - " \
+            + str(self.flow) + "/" + str(self.capacity)
 
 
 class Graph:
@@ -40,9 +43,7 @@ class Graph:
         self.A = []
         self.B = []
 
-
-
-    def add_edge(self, u_id,  v_id, capacity, s_or_t=0):
+    def add_edge(self, u_id, v_id, capacity, s_or_t=0):
         u = self.nodes[u_id]
         v = self.nodes[v_id]
         if capacity == -1:
@@ -52,7 +53,6 @@ class Graph:
         self.adjacency_list[u].append(e)
         if not s_or_t:
             self.adjacency_list[v].append(e.reverse)
-
 
     def add_node(self, u):
         self.nodes.append(u)
@@ -76,17 +76,13 @@ class Graph:
         for edge in P:
             edge.add_flow(b)
 
-
     def bottleneck(self, P):
-        min_residual_capacity = min(P, key = attrgetter('residual_capacity')).residual_capacity
+        min_residual_capacity = min(P, key=attrgetter('residual_capacity'))\
+            .residual_capacity
         return min_residual_capacity
 
-
     def find_path(self, source, sink, path):
-
-
         if source == sink:
-
             self.A = []
             self.B = []
             self.A.append(self.nodes[0])
@@ -99,21 +95,22 @@ class Graph:
 
         for edge in self.adjacency_list[source]:
             node = edge.v
-            if edge.residual_capacity > 0 and edge not in path and not node.visited:
+            if edge.residual_capacity > 0 and edge not in path \
+                and not node.visited:
                 self.A.append(edge.v)
                 node.visited = True
-                result = self.find_path(edge.v, sink, path + [edge]) 
-                if result != None:
+                result = self.find_path(edge.v, sink, path + [edge])
+                if result is not None:
                     return result
 
 
 def parse_data():
     data = sys.stdin.read().splitlines()
     N = int(data[0])
-    nodes = data[1:N+1]
-    M = int(data[N+1])
-    edges = data[N+2:]
-    
+    nodes = data[1:N + 1]
+    M = int(data[N + 1])
+    edges = data[N + 2:]
+
     g = Graph(N, M)
 
     for i, name in enumerate(nodes):
@@ -126,7 +123,7 @@ def parse_data():
         capacity = int(e[2])
         # If source or sink, send a true parameter to add_edge method
         # so as to not create the reverse edge
-        if u_id == 0 or u_id == N-1 or v_id == 0 or v_id == N-1:
+        if u_id == 0 or u_id == N - 1 or v_id == 0 or v_id == N - 1:
             g.add_edge(u_id, v_id, capacity, 1)
         else:
             g.add_edge(u_id, v_id, capacity)
@@ -136,8 +133,7 @@ def parse_data():
 
 g = parse_data()
 print "Max flow is: " + str(g.max_flow())
-print
-print "Edges in min cut are:"
+print "\nEdges in min cut are:"
 mcc = 0
 
 for node in g.A:
@@ -147,5 +143,4 @@ for node in g.A:
             print edge
             mcc += edge.capacity
 
-print
-print "Min cut is: " + str(mcc)
+print "\nMin cut is: " + str(mcc)
