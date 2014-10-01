@@ -29,13 +29,17 @@ class Edge:
         self.reverse.residual_capacity = self.reverse.capacity - self.reverse.flow
 
     def __repr__(self):
-        return str(self.u.name) + "-->" + str(self.v.name) + " - " + str(self.flow) + "/" + str(self.capacity)
+        return str(self.u.id) + "-->" + str(self.v.id) + " - " + str(self.flow) + "/" + str(self.capacity)
 
 
 class Graph:
     def __init__(self, N, M):
         self.nodes = []
         self.adjacency_list = {}
+        self.min_cut = []
+        self.A = []
+        self.B = []
+
 
 
     def add_edge(self, u_id,  v_id, capacity, s_or_t=0):
@@ -61,7 +65,6 @@ class Graph:
             if not P:
                 break
             self.augment(f, P)
-            print P
 
         for edge in self.adjacency_list[self.nodes[0]]:
             f += edge.flow
@@ -83,7 +86,12 @@ class Graph:
 
 
         if source == sink:
-            print path
+
+            self.A = []
+            self.B = []
+            self.A.append(self.nodes[0])
+            #self.min_cut = []
+
             # Resetting the visited booleans
             for node in self.nodes:
                 node.visited = False
@@ -91,8 +99,8 @@ class Graph:
 
         for edge in self.adjacency_list[source]:
             node = edge.v
-            print edge
             if edge.residual_capacity > 0 and edge not in path and not node.visited:
+                self.A.append(edge.v)
                 node.visited = True
                 result = self.find_path(edge.v, sink, path + [edge]) 
                 if result != None:
@@ -127,4 +135,17 @@ def parse_data():
 
 
 g = parse_data()
-print g.max_flow()
+print "Max flow is: " + str(g.max_flow())
+print
+print "Edges in min cut are:"
+mcc = 0
+
+for node in g.A:
+    #print "Node in A id: " + str(node.id)
+    for edge in g.adjacency_list[node]:
+        if edge.u in g.A and edge.v not in g.A:
+            print edge
+            mcc += edge.capacity
+
+print
+print "Min cut is: " + str(mcc)
