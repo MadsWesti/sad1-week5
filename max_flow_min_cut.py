@@ -1,4 +1,4 @@
-import sys, math
+import sys
 from Queue import *
 from operator import attrgetter
 
@@ -39,9 +39,7 @@ class Graph:
     def __init__(self, N, M):
         self.nodes = []
         self.adjacency_list = {}
-        self.min_cut = []
         self.A = []
-        self.B = []
 
     def add_edge(self, u_id, v_id, capacity, s_or_t=0):
         u = self.nodes[u_id]
@@ -84,9 +82,7 @@ class Graph:
     def find_path(self, source, sink, path):
         if source == sink:
             self.A = []
-            self.B = []
-            self.A.append(self.nodes[0])
-            #self.min_cut = []
+            self.A.append(self.nodes[0])  # Adding the source node
 
             # Resetting the visited booleans
             for node in self.nodes:
@@ -134,13 +130,13 @@ def parse_data():
 g = parse_data()
 print "Max flow is: " + str(g.max_flow())
 print "\nEdges in min cut are:"
-mcc = 0
+min_cut_capacity = 0
 
+# Calculating the min cut
 for node in g.A:
-    #print "Node in A id: " + str(node.id)
     for edge in g.adjacency_list[node]:
         if edge.u in g.A and edge.v not in g.A:
             print edge
             mcc += edge.capacity
 
-print "\nMin cut is: " + str(mcc)
+print "\nMin cut is: " + str(min_cut_capacity)
