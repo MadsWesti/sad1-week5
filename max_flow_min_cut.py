@@ -17,7 +17,7 @@ class Edge:
         self.residual_capacity = self.capacity - self.flow
 
         if not reverse:
-            self.reverse = Edge(v, u, capacity, self)
+            self.reverse = Edge(v, u, 0, self)
         else:
             self.reverse = reverse
 
